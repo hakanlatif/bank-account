@@ -1,0 +1,141 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: "Bank Account"
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /account/register:
+    post:
+      summary: "Creates a bank account"
+      operationId: register
+      requestBody:
+        description: "Required fields for creating a bank account"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountRegistrationRequest"
+      responses:
+        "200":
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountRegistrationResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "409":
+          description: "Conflict - Username exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /account/logon:
+    post:
+      summary: "Logon to existing bank account"
+      operationId: logon
+      requestBody:
+        description: "Credentials of the bank account"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogonRequest"
+      responses:
+        "204":
+          description: "Successful Operation"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+components:
+  schemas:
+    AccountRegistrationRequest:
+      type: object
+      required:
+        - name
+        - address
+        - dob
+        - documentNr
+        - userName
+      properties:
+        name:
+          type: string
+          description: "Name of the customer"
+          example: "Keano van Dongen"
+        address:
+          type: string
+          description: "Address of the customer"
+          example: "3 hoog Gedeonaweg 637 II, Margarethaambacht, WI 9410 IG"
+        dob:
+          type: string
+          format: date
+          description: "Date of birth"
+          example: "2000-10-10"
+        documentNr:
+          type: string
+          description: "ID document number"
+          example: "vbkpjcnchg6p"
+        userName:
+          type: string
+          description: "User name of the bank account to be created"
+          example: "keano"
+    AccountRegistrationResponse:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: "User name of the bank account"
+          example: "keano"
+        password:
+          type: string
+          description: "Generated password of the created bank account"
+          example: "default-password"
+    LogonRequest:
+      type: object
+      required:
+        - userName
+        - password
+      properties:
+        userName:
+          type: string
+          description: "User name of the bank account"
+          example: "keano"
+        password:
+          type: string
+          description: "Password for the bank account"
+          example: "default-password"
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Error message"
+          example: "Internal server error"

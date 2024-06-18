@@ -1,0 +1,94 @@
+version: "3"
+
+services:
+
+  rabbit:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - internal-network
+
+  api-gateway:
+    image: api-gateway
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      IDENTITYSERVICE_HOSTS: identity-service-1:8100,identity-service-2:8100,identity-service-3:8100
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+      LOGGING_LEVEL_APPLICATION: INFO
+    networks:
+      - internal-network
+
+  identity-service-1:
+    image: identity-service
+    restart: always
+    environment:
+      SERVER_PORT: 8100
+      BANKACCOUNT_BRANCHCODE: 1
+      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_RABBITMQ_VIRTUAL_HOST: /
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+      LOGGING_LEVEL_APPLICATION: INFO
+    depends_on:
+      - rabbit
+    networks:
+      - internal-network
+
+  identity-service-2:
+    image: identity-service
+    restart: always
+    environment:
+      SERVER_PORT: 8100
+      BANKACCOUNT_BRANCHCODE: 2
+      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_RABBITMQ_VIRTUAL_HOST: /
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+      LOGGING_LEVEL_APPLICATION: INFO
+    depends_on:
+      - rabbit
+    networks:
+      - internal-network
+
+  identity-service-3:
+    image: identity-service
+    restart: always
+    environment:
+      SERVER_PORT: 8100
+      BANKACCOUNT_BRANCHCODE: 3
+      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_RABBITMQ_VIRTUAL_HOST: /
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+      LOGGING_LEVEL_APPLICATION: INFO
+    depends_on:
+      - rabbit
+    networks:
+      - internal-network
+
+  db-migrator:
+    image: db-migrator
+    restart: always
+    environment:
+      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_RABBITMQ_VIRTUAL_HOST: /
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - rabbit
+    networks:
+      - internal-network
+
+networks:
+  internal-network:

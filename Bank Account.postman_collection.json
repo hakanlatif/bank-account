@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "a869c2d6-46aa-4ab5-bcc1-3a84f41f6cbe",
+		"name": "Bank Account",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/account/register - Success",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Keano van Dongen\",\r\n    \"address\": \"3 hoog Gedeonaweg 637 II, Margarethaambacht, WI 9410 IG\",\r\n    \"dob\": \"2020-10-10\",\r\n    \"documentNr\": \"vbkpjcnchg6p\",\r\n    \"userName\": \"keano\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/register - Fail - Wrong Date - HttpMessageNotReadable",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Keano van Dongen\",\r\n    \"address\": \"3 hoog Gedeonaweg 637 II, Margarethaambacht, WI 9410 IG\",\r\n    \"dob\": \"10-10-2020\",\r\n    \"documentNr\": \"vbkpjcnchg6p\",\r\n    \"userName\": \"keano\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/register - Fail - Missing Field - MethodArgumentNotValid",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Keano van Dongen\",\r\n    \"address\": \"3 hoog Gedeonaweg 637 II, Margarethaambacht, WI 9410 IG\",\r\n    \"dob\": \"2000-10-10\",\r\n    \"documentNr\": \"vbkpjcnchg6p\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/logon - Success",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userName\": \"keano\",\r\n    \"password\": \"c4J0p%qA8JSy1Hj^\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/logon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"logon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/logon - Fail - Missing password - MethodArgumentNotValid",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userName\": \"keano\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/logon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"logon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/logon - Fail - Missing userName and password - MethodArgumentNotValid Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/account/logon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"logon"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
