@@ -24,6 +24,8 @@ public class AmqpHelper {
         } catch (AmqpException e) {
             log.error("Amqp error sending message to exchange: {} with routingKey: {}", exchangeName, routingKey, e);
             throw e;
+            // This nested catch block ensures that exceptions including (unexpected) unchecked exceptions that might
+            // be triggered by RabbitMQ library handled properly to transfer all failed messages to DLQ to not lose message
         } catch (Exception e) {
             log.error("Unable to send message to exchange: {} with routingKey: {}", exchangeName, routingKey, e);
             throw e;

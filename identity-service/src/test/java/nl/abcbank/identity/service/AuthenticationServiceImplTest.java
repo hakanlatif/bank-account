@@ -2,15 +2,16 @@ package nl.abcbank.identity.service;
 
 import jakarta.xml.bind.JAXBException;
 import java.time.LocalDate;
-import mockit.MockUp;
 import nl.abcbank.identity.config.IdentityServiceConfig;
 import nl.abcbank.identity.exception.ServiceException;
+import nl.abcbank.identity.helper.PasswordGenerator;
 import nl.abcbank.identity.helper.XmlHelper;
 import nl.abcbank.identity.model.amqp.BankAccount;
 import nl.abcbank.identity.model.jpa.BankAccountCredentials;
 import nl.abcbank.identity.repository.BankAccountCredentialsRepository;
 import nl.abcbank.openapi.identityservice.internal.model.IdentityServiceLogonRequest;
 import nl.abcbank.openapi.identityservice.internal.model.IdentityServiceRegistrationRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +19,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.passay.PasswordGenerator;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -59,15 +61,19 @@ class AuthenticationServiceImplTest {
     @InjectMocks
     private AuthenticationServiceImpl authenticationService;
 
-    @BeforeEach
-    public void setup() {
-        new MockUp<PasswordGenerator>() {
+    private MockedStatic<PasswordGenerator> mockedPasswordGenerator;
 
-            @mockit.Mock
-            public static String generatePassword() {
-                return DEFAULT_PASSWORD;
-            }
-        };
+    @BeforeEach
+    public void setUp() {
+        mockedPasswordGenerator = Mockito.mockStatic(PasswordGenerator.class);
+        mockedPasswordGenerator
+                .when(PasswordGenerator::generatePassword)
+                .thenReturn(DEFAULT_PASSWORD);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        mockedPasswordGenerator.close();
     }
 
     @Test

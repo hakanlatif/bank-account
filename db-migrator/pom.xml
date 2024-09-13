@@ -14,12 +14,11 @@
 	<name>DB migrator</name>
 	<description>DB migrator</description>
 	<properties>
-		<jackson.datatype.jsr310.version>2.17.1</jackson.datatype.jsr310.version>
+		<jackson.datatype.jsr310.version>2.17.2</jackson.datatype.jsr310.version>
 		<jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
 		<jakarta.xml.bind.api.version>4.0.2</jakarta.xml.bind.api.version>
 		<java.version>17</java.version>
-		<jmockit.version>1.54.0</jmockit.version>
-		<junit.jupiter.version>5.10.2</junit.jupiter.version>
+		<junit.jupiter.version>5.10.3</junit.jupiter.version>
 		<log4j2.version>2.23.1</log4j2.version>
 		<mockito.version>5.12.0</mockito.version>
 		<sortpom.maven.plugin.version>4.0.0</sortpom.maven.plugin.version>
@@ -30,11 +29,6 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>${jackson.datatype.jsr310.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.hazendaz.jmockit</groupId>
-			<artifactId>jmockit</artifactId>
-			<version>${jmockit.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
@@ -161,11 +155,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<runOrder>alphabetical</runOrder>
-					<argLine>@{argLine}
-						-javaagent:"${settings.localRepository}"/com/github/hazendaz/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.github.ekryd.sortpom</groupId>

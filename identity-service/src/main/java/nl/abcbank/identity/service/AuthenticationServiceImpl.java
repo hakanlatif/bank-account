@@ -63,6 +63,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             AmqpHelper.publishMessage(rabbitTemplate, bankAccount, AmqpConstants.IDENTITY_EXCHANGE,
                     AmqpConstants.IDENTITY_BINDING_ROUTING_KEY);
+            // This nested catch block ensures that exceptions including (unexpected) unchecked exceptions that might
+            // be triggered by RabbitMQ library handled properly to transfer all failed messages to DLQ to not lose message
         } catch (Exception e) {
             log.error("Unable to send registered bank account to DB migrator");
             throw new ServiceException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR, e);

@@ -32,9 +32,10 @@ public class AmqpListener {
         try {
             BankAccount bankAccountAmqp = XmlHelper.unmarshal(message.getBody(), BankAccount.class);
             dbMigratorService.saveBankAccount(getBankAccount(bankAccountAmqp));
+            // This nested catch block ensures to not lose newly registered bank account
+            // in case of unexpected unchecked exception while persisting the account
         } catch (Exception e) {
-            String errorMessage = "Unable to save bank account";
-            log.error(String.format("%s : %s", errorMessage, new String(message.getBody(), StandardCharsets.UTF_8)), e);
+            log.error("Unable to save bank account : {}", new String(message.getBody(), StandardCharsets.UTF_8), e);
 
             throw e;
         }

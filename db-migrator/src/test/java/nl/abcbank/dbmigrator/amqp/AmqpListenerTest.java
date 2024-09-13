@@ -4,17 +4,20 @@ import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import mockit.MockUp;
 import nl.abcbank.dbmigrator.exception.ServiceException;
 import nl.abcbank.dbmigrator.helper.XmlHelper;
 import nl.abcbank.dbmigrator.model.jpa.BankAccount;
 import nl.abcbank.dbmigrator.service.DbMigratorServiceImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
@@ -44,8 +47,24 @@ class AmqpListenerTest {
     @InjectMocks
     private AmqpListener amqpListener;
 
+    private MockedStatic<XmlHelper> mockedXmlHelper;
+
+    @BeforeEach
+    public void setUp() {
+        mockedXmlHelper = Mockito.mockStatic(XmlHelper.class);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        mockedXmlHelper.close();
+    }
+
     @Test
     void shouldConsumeRegisteredBankAccounts() throws ServiceException, InterruptedException, JAXBException {
+        mockedXmlHelper
+                .when(XmlHelper.unmarshal(any(), any()))
+                .thenCallRealMethod();
+
         doNothing().when(dbMigratorService).saveBankAccount(any());
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -80,15 +99,10 @@ class AmqpListenerTest {
     }
 
     @Test
-    void shouldFailConsumingRegisteredBankAccountsWithException() throws ServiceException, InterruptedException {
-        new MockUp<XmlHelper>() {
-
-            @mockit.Mock
-            public <T> T unmarshal(byte[] message, Class<T> clazz) throws JAXBException {
-                throw new JAXBException(SOME_ERROR_MESSAGE);
-            }
-
-        };
+    void shouldFailConsumingRegisteredBankAccountsWithException() throws ServiceException, InterruptedException, JAXBException {
+        mockedXmlHelper
+                .when(XmlHelper.unmarshal(any(), any()))
+                .thenThrow(new JAXBException(SOME_ERROR_MESSAGE));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -116,7 +130,11 @@ class AmqpListenerTest {
     }
 
     @Test
-    void shouldFailConsumingRegisteredBankAccountsWithServiceException() throws InterruptedException {
+    void shouldFailConsumingRegisteredBankAccountsWithServiceException() throws InterruptedException, JAXBException {
+        mockedXmlHelper
+                .when(XmlHelper.unmarshal(any(), any()))
+                .thenCallRealMethod();
+
         doThrow(new ServiceException(SOME_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR))
                 .when(dbMigratorService).saveBankAccount(any());
 

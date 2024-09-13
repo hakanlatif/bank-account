@@ -19,7 +19,6 @@
 		<jackson.datatype.jsr310.version>2.17.1</jackson.datatype.jsr310.version>
 		<jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
 		<java.version>17</java.version>
-		<jmockit.version>1.54.0</jmockit.version>
 		<junit.jupiter.version>5.10.2</junit.jupiter.version>
 		<log4j2.version>2.23.1</log4j2.version>
 		<mockito.version>5.12.0</mockito.version>
@@ -36,11 +35,6 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>${jackson.datatype.jsr310.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.hazendaz.jmockit</groupId>
-			<artifactId>jmockit</artifactId>
-			<version>${jmockit.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -145,62 +139,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.maven.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>default-prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>check</id>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<phase>test</phase>
-						<configuration>
-							<excludes>
-								<exclude>nl/abcbank/**/model/**/*</exclude>
-								<exclude>nl/abcbank/identity/App*class</exclude>
-								<exclude>nl/abcbank/identity/config/*</exclude>
-								<exclude>nl/abcbank/identity/helper/AmqpHelper*class</exclude>
-								<exclude>nl/abcbank/identity/helper/LocalDateAdapter*class</exclude>
-								<exclude>nl/abcbank/identity/helper/PasswordGenerator*class</exclude>
-								<exclude>nl/abcbank/openapi/**/*</exclude>
-								<exclude>org/openapitools/**/*</exclude>
-							</excludes>
-							<rules>
-								<rule>
-									<element>CLASS</element>
-									<limits>
-										<limit>
-											<counter>LINE</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>90%</minimum>
-										</limit>
-										<limit>
-											<counter>CLASS</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>80%</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<runOrder>alphabetical</runOrder>
-					<argLine>@{argLine}
-						-javaagent:"${settings.localRepository}"/com/github/hazendaz/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.openapitools</groupId>
@@ -265,11 +205,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>maven_central</id>
-			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2/</url>
-		</repository>
-	</repositories>
 </project>

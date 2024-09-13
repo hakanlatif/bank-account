@@ -17,8 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -33,7 +34,22 @@ import static org.mockito.Mockito.when;
 class AuthenticationServiceImplTest {
 
     @Mock
-    private RestTemplate restTemplate;
+    private RestClient restClient;
+
+    @Mock
+    private RestClient.RequestBodySpec requestBodySpec;
+
+    @Mock
+    private RestClient.RequestBodyUriSpec requestBodyUriSpec;
+
+    @Mock
+    private RestClient.RequestHeadersSpec requestHeadersSpec;
+
+    @Mock
+    private RestClient.ResponseSpec responseSpec;
+
+    @Mock
+    private ResponseEntity responseEntity;
 
     @Mock
     private IdentityServiceConfig identityServiceConfig;
@@ -55,8 +71,21 @@ class AuthenticationServiceImplTest {
         AccountRegistrationResponse accountRegistrationResponse = new AccountRegistrationResponse();
         accountRegistrationResponse.setPassword("some-password");
 
-        when(restTemplate.postForObject(anyString(), any(), any()))
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(AccountRegistrationRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toEntity(AccountRegistrationResponse.class))
+                .thenReturn(responseEntity);
+        when(responseEntity.getBody())
                 .thenReturn(accountRegistrationResponse);
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())
@@ -67,11 +96,25 @@ class AuthenticationServiceImplTest {
         assertEquals("some-password", bankAccountService.register(request));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldFailRegistrationForExistingUserName() {
         HttpServerErrorException httpServerErrorException = new HttpServerErrorException("User name is in use",
                 HttpStatus.CONFLICT, "", null, "{\"message\": \"User name is in use\"}".getBytes(), null);
-        when(restTemplate.postForObject(anyString(), any(), any()))
+
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(AccountRegistrationRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toEntity(AccountRegistrationResponse.class))
+                .thenReturn(responseEntity);
+        when(responseEntity.getBody())
                 .thenThrow(httpServerErrorException);
 
         when(identityServiceConfig.getIdentityServiceHosts())
@@ -95,8 +138,21 @@ class AuthenticationServiceImplTest {
 
     @Test
     void shouldRegistrationIfResponseIsNull() {
-        when(restTemplate.postForObject(anyString(), any(), any()))
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(AccountRegistrationRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toEntity(AccountRegistrationResponse.class))
+                .thenReturn(responseEntity);
+        when(responseEntity.getBody())
                 .thenReturn(null);
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())
@@ -118,8 +174,19 @@ class AuthenticationServiceImplTest {
 
     @Test
     void shouldFailRegistrationForIllegalArgumentException() {
-        when(restTemplate.postForObject(anyString(), any(), any()))
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(AccountRegistrationRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toEntity(AccountRegistrationResponse.class))
                 .thenThrow(new IllegalArgumentException("Some exception"));
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())
@@ -139,10 +206,22 @@ class AuthenticationServiceImplTest {
         );
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldLogon() {
-        when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(Void.class);
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(LogonRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toBodilessEntity())
+                .thenReturn(responseEntity);
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())
@@ -159,8 +238,20 @@ class AuthenticationServiceImplTest {
     void shouldFailLogonWithWrongPassword() {
         HttpServerErrorException httpServerErrorException = new HttpServerErrorException("Wrong username or password",
                 HttpStatus.UNAUTHORIZED, "", null, null, null);
-        when(restTemplate.postForObject(anyString(), any(), any()))
+
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(LogonRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toBodilessEntity())
                 .thenThrow(httpServerErrorException);
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())
@@ -183,8 +274,19 @@ class AuthenticationServiceImplTest {
 
     @Test
     void shouldFailLogonForIllegalArgumentException() {
-        when(restTemplate.postForObject(anyString(), any(), any()))
+        when(restClient.post())
+                .thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.body(any(LogonRequest.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any()))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.toBodilessEntity())
                 .thenThrow(new IllegalArgumentException("Some exception"));
+
         when(identityServiceConfig.getIdentityServiceHosts())
                 .thenReturn(Collections.singletonList("localhost"));
         when(identityServiceConfig.getNumOfIdentityServiceInstances())

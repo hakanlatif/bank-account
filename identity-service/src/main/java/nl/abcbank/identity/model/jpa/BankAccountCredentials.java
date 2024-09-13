@@ -6,17 +6,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(indexes = {
         @Index(columnList = "userName", unique = true),
         @Index(columnList = "password")})
+@Entity
 public class BankAccountCredentials implements Serializable {
 
     @Id
